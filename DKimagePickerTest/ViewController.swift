@@ -10,6 +10,7 @@ import UIKit
 import Photos
 import DKImagePickerController  // 忘れないように
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource  {
+    var localImages: [UIImage] = []
 
     @IBOutlet weak var CollerctionView: UICollectionView!
     override func viewDidLoad() {
@@ -26,10 +27,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             
             // 選択された画像はassetsに入れて返却されるのでfetchして取り出す
             for asset in assets {
-                asset.fetchFullScreenImage(completeBlock: { (image, info) in
+                asset.fetchFullScreenImage(completeBlock: { (image:UIImage?, info) in
                     // ここで取り出せる
                     //self.imageView.image = image
-
+                    //assetsにライブラリの画像をいれる
+                   if let image = image {
+                    self.localImages.append(image)
+                    }
                 })
             }
             
@@ -39,8 +43,9 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         self.present(pickerController, animated: true) {}
     }
    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-                  return 13 //追加
-              }
+        return localImages.count  // ←修正する
+    
+    }
             func numberOfSections(in collectionView: UICollectionView) -> Int {
                   return 1
               }
@@ -49,9 +54,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                   //①
                   let cell = self.CollerctionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CollectionViewCell
                   //②
-                  cell.imageView.image = image
+                // Cellに値を設定する.  --- ここから ---
+//                let task = taskArray[indexPath.row]
+//                cell.textLabel?.text = task.title
+
                   //③
-               
+                cell.imageView.image = localImages[indexPath.row]
+
              
                 //⑤
                  return cell
